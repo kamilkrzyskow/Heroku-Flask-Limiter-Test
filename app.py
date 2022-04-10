@@ -6,30 +6,13 @@ app = Flask(__name__)
 limiter = Limiter(app, key_func=get_remote_address)
 
 
-@app.route("/slow")
-@limiter.limit("1 per day")
-def slow():
-    return ":("
-
-
-@app.route("/medium")
-@limiter.limit("1/second", override_defaults=False)
-def medium():
-    return ":|"
-
-
-@app.route("/fast")
-def fast():
-    return ":)"
-
-
-@app.route("/ping")
-@limiter.exempt
-def ping():
-    return "PONG"
-
-
 @app.route("/myip")
-@limiter.limit("1/minute")
+@limiter.limit("10/minute")
 def myip():
-    return get_remote_address()
+    return f"GET {get_remote_address()}"
+
+
+@app.route("/myip", methods="POST")
+@limiter.limit("10/minute")
+def myip():
+    return f"POST {get_remote_address()}"
